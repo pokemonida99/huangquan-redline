@@ -195,6 +195,7 @@
     if (st === 'play' && S.t === 0) lastTick = -1;
     RL.step(S);
     if (S.bats.length > before) AUD.SFX.bat();
+    for (const b of S.bats) { if (b.dash > 0 && !b._d) AUD.SFX.lunge(); b._d = b.dash > 0; }
     if (st === 'play') {
       const left = Math.max(0, Math.ceil(S.time - S.t));
       $('timer').textContent = left;
@@ -455,19 +456,30 @@
   function drawBat(b, t) {
     const img = IMG.bat;
     if (!img.complete || !img.naturalWidth) return;
+    const dash = b.dash > 0, wind = b.wind > 0;
+    if (dash) { // 殘影
+      ctx.save(); ctx.globalAlpha = 0.22;
+      batSprite(img, b.position.x - b.velocity.x * 2.2, b.position.y - b.velocity.y * 2.2, b, t, true);
+      ctx.globalAlpha = 0.12;
+      batSprite(img, b.position.x - b.velocity.x * 4.4, b.position.y - b.velocity.y * 4.4, b, t, true);
+      ctx.restore();
+    }
+    batSprite(img, b.position.x + (wind ? Math.sin(t * 90) * 2 : 0), b.position.y, b, t, dash, wind);
+  }
+  function batSprite(img, x, y, b, t, dash, wind) {
     const iw = img.naturalWidth, ih = img.naturalHeight, k = 74 / iw;
-    const flap = Math.sin(t * 26 + b.phase * 3) * 0.55;
+    const flap = wind ? 0.9 : Math.sin(t * (dash ? 40 : 26) + b.phase * 3) * (dash ? 0.25 : 0.55);
     const cx = iw / 2, sy = ih * 0.32;
     ctx.save();
-    ctx.translate(b.position.x, b.position.y);
-    ctx.rotate(Math.max(-0.4, Math.min(0.4, b.velocity.x * 0.05)));
+    ctx.translate(x, y);
+    // 撲的時候朝前衝的方向傾斜、拉長
+    const lean = dash ? Math.max(-0.9, Math.min(0.9, Math.atan2(b.velocity.x, -b.velocity.y) * 0.45)) : Math.max(-0.4, Math.min(0.4, b.velocity.x * 0.05));
+    ctx.rotate(lean);
+    if (dash) ctx.scale(0.88, 1.18); else if (wind) ctx.scale(0.85, 0.85);
     ctx.scale(k, k);
     ctx.translate(-cx, -ih * 0.45);
-    // 左翅
     ctx.save(); ctx.translate(cx - 14, sy); ctx.rotate(flap); ctx.drawImage(img, 0, 0, cx - 8, ih, -(cx - 14), -sy, cx - 8, ih); ctx.restore();
-    // 右翅
     ctx.save(); ctx.translate(cx + 14, sy); ctx.rotate(-flap); ctx.drawImage(img, cx + 8, 0, iw - cx - 8, ih, -6, -sy, iw - cx - 8, ih); ctx.restore();
-    // 身體
     ctx.drawImage(img, cx - 34, 0, 68, ih, cx - 34, 0, 68, ih);
     ctx.restore();
   }

@@ -57,6 +57,12 @@
       o.type = 'square'; o.frequency.setValueAtTime(2400 + Math.random() * 800, t); o.frequency.exponentialRampToValueAtTime(4200, t + 0.06);
       o.connect(g); g.connect(master); env(g, t, 0.005, 0.07, 0.025); o.start(t); o.stop(t + 0.1);
     },
+    lunge() {
+      if (!ac || !limit('lunge', 140)) return;
+      const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(1800 + Math.random() * 600, t); o.frequency.exponentialRampToValueAtTime(900, t + 0.09);
+      o.connect(g); g.connect(master); env(g, t, 0.004, 0.1, 0.02); o.start(t); o.stop(t + 0.13);
+    },
     thud() { if (!ac || !limit('thud', 85)) return; noise(ac.currentTime, 0.06, 0.12, 900); },
     tick(hi) { if (!ac) return; pluck(hi ? 880 : 659.3, ac.currentTime, 0.18, 0.12); },
     win() { if (!ac) return; const t = ac.currentTime; [0, 2, 4, 5, 7].forEach((k, i) => pluck(PENTA[k] * 1, t + i * 0.11, 1.2, 0.2)); pluck(PENTA[9], t + 0.6, 1.6, 0.18); },

@@ -133,10 +133,10 @@
       frictionAir: 0.02, friction: 0, restitution: 0.2, density: 0.0005, label: 'bat', slop: 1,
     });
     const sp = S.level.speed || 5;
-    b.spd = sp * (0.8 + r() * 0.4);
+    b.spd = sp * 1.35 * (0.8 + r() * 0.4);
     b.phase = r() * 6.28;
     b.wob = 0.35 + r() * 0.5;
-    b.stuck = 0; b.around = 0; b.back = 0; b.side = r() < 0.5 ? 1 : -1;
+    b.stuck = 0; b.around = 0; b.back = 0; b.wind = 0; b.dash = 0; b.cool = 0.4 + r() * 0.8; b.side = r() < 0.5 ? 1 : -1;
     M.Body.setVelocity(b, { x: d[0] * 6 + (r() - 0.5) * 3, y: d[1] * 6 + (r() - 0.5) * 3 });
     M.Composite.add(S.world, b);
     S.bats.push(b);
@@ -161,10 +161,25 @@
       const dist = Math.hypot(tx, ty) || 1;
       near = Math.min(near, dist);
       tx /= dist; ty /= dist;
-      let dx, dy, sp = b.spd;
+      let dx, dy, sp = b.spd, kk = k;
+      const st = DT / 1000;
+      b.cool -= st;
       if (S.state === 'win') { dx = -tx * 0.4; dy = -1; sp *= 1.4; }
-      else if (b.back > 0) { b.back -= DT / 1000; dx = -tx; dy = -ty; sp *= 0.5; }
-      else {
+      else if (b.back > 0) {
+        // 撞到東西彈開，彈完立刻再撲
+        b.back -= st; dx = -tx; dy = -ty; sp *= 0.5;
+        if (b.back <= 0) { b.dash = 0.3; b.wind = 0; }
+      } else if (b.wind > 0) {
+        // 蓄力：往後縮一下
+        b.wind -= st; dx = -tx; dy = -ty; sp *= 0.35; kk = k * 2;
+        if (b.wind <= 0) b.dash = 0.32;
+      } else if (b.dash > 0) {
+        // 撲過去
+        b.dash -= st; dx = tx; dy = ty; sp *= 1.8; kk = k * 1.6;
+        if (b.dash <= 0) b.cool = 0.7 + S.rand() * 0.9;
+      } else if (dist < 330 && b.cool <= 0) {
+        b.wind = 0.16 + S.rand() * 0.08; dx = tx; dy = ty;
+      } else {
         // 卡在東西上太久就往旁邊繞
         const v = Math.hypot(b.velocity.x, b.velocity.y);
         if (b.around > 0) b.around -= DT / 1000;
@@ -174,8 +189,8 @@
         dx = tx - ty * w; dy = ty + tx * w;
       }
       const n = Math.hypot(dx, dy) || 1;
-      const fx = (dx / n * sp - b.velocity.x) * b.mass * k;
-      const fy = (dy / n * sp - b.velocity.y) * b.mass * k - b.mass * g.y * g.scale;
+      const fx = (dx / n * sp - b.velocity.x) * b.mass * kk;
+      const fy = (dy / n * sp - b.velocity.y) * b.mass * kk - b.mass * g.y * g.scale;
       b.force.x += fx; b.force.y += fy;
     }
     S.scared = near;
