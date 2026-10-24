@@ -3,7 +3,7 @@
   const M = root.Matter;
   const W = 720, H = 1280, DT = 1000 / 60;
   const T = 14;                 // 紅線粗細
-  const RAT_W = 74, RAT_H = 124;
+  const RAT_R = 50;            // 鼠軍師是一顆大頭（圓）
   const BAT_R = 15;
   const MOUTH = { down: [0, 1], up: [0, -1], left: [-1, 0], right: [1, 0] };
 
@@ -45,9 +45,10 @@
       S.caves.push(b); add.push(b);
     }
     const r = level.rat;
-    S.rat = M.Bodies.rectangle(r.x, r.y - RAT_H / 2 - 0.5, RAT_W, RAT_H, {
-      chamfer: { radius: 24 }, friction: 0.6, frictionStatic: 0.8, density: 0.002, label: 'rat',
+    S.rat = M.Bodies.circle(r.x, r.y - RAT_R - 0.5, RAT_R, {
+      friction: 0.8, frictionStatic: 1, density: 0.002, label: 'rat',
     });
+    M.Body.setInertia(S.rat, Infinity);   // 頭不翻滾，表情才看得清楚
     add.push(S.rat);
     M.Composite.add(S.world, add);
 
@@ -192,5 +193,5 @@
     return used <= s3 ? 3 : used <= s2 ? 2 : 1;
   }
 
-  root.RL = { create, segOK, commit, step, stars, lineLen, W, H, T, RAT_W, RAT_H, BAT_R, DT };
+  root.RL = { create, segOK, commit, step, stars, lineLen, W, H, T, RAT_R, BAT_R, DT };
 })(typeof window !== 'undefined' ? window : globalThis);
