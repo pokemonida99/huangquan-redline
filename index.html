@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="紅線護軍師">
+<meta name="theme-color" content="#0e0a0f">
+<title>紅線護軍師</title>
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+<div id="stage">
+  <canvas id="cv"></canvas>
+
+  <!-- 遊戲中 -->
+  <div id="hud" class="hide">
+    <button class="tag" id="bMenu">選關</button>
+    <div class="lv"><b id="lvNum">第 1 關</b><span id="lvName"></span></div>
+    <div class="ink"><span>紅線</span><i><em id="inkBar"></em></i></div>
+    <div id="timer" class="hide">10</div>
+  </div>
+  <div id="tip" class="hide"><img src="art/yuelao-smile.webp" alt=""><p id="tipText"></p></div>
+  <div id="ctl" class="hide">
+    <button class="btn ghost" id="bRetry">重來</button>
+    <button class="btn ghost" id="bHint">月老指點</button>
+    <button class="btn ghost sq" id="bMute">音</button>
+  </div>
+
+  <!-- 結算 -->
+  <div id="result" class="hide">
+    <h2 id="rTitle">護駕成功</h2>
+    <div class="seals" id="rSeals"></div>
+    <p id="rLine"></p>
+    <div class="row">
+      <button class="btn ghost" id="rRetry">重來</button>
+      <button class="btn" id="rNext">下一關</button>
+    </div>
+  </div>
+
+  <!-- 標題 -->
+  <div id="title" class="screen">
+    <div class="stamp">黃泉<br>燒肉店</div>
+    <h1>紅線<br>護軍師</h1>
+    <p class="sub">月老出手，一條紅線擋住滿天蝙蝠</p>
+    <img class="t-yuelao" src="art/yuelao-smile.webp" alt="">
+    <img class="t-rat" src="art/rat-scared.webp" alt="">
+    <svg class="t-thread" viewBox="0 0 720 1280" preserveAspectRatio="none"><path d="M505 795 C 430 900, 330 720, 262 880 S 200 960, 205 925"/></svg>
+    <div class="t-btns">
+      <button class="btn big" id="bStart">開始牽線</button>
+      <button class="btn ghost" id="bSelect">選關</button>
+    </div>
+  </div>
+
+  <!-- 選關 -->
+  <div id="select" class="screen hide">
+    <div class="sel-head"><button class="tag" id="bBack">返回</button><h2>選關</h2><span id="selTotal"></span></div>
+    <div id="grid"></div>
+    <p class="sel-foot">畫一條紅線護住鼠軍師，撐過倒數就過關。紅線用得越少，蓋的「緣」印越多。</p>
+  </div>
+</div>
+<script src="vendor/matter.min.js"></script>
+<script src="js/sim.js?v=1"></script>
+<script src="js/levels.js?v=1"></script>
+<script src="js/audio.js?v=1"></script>
+<script src="js/game.js?v=1"></script>
+</body>
+</html>
