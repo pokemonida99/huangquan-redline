@@ -111,3 +111,43 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .cell.lock { background: #2a2026; color: #6d5d64; box-shadow: none; border-color: #3a2f35; }
 .cell.lock b::after { content: " 未開"; font-size: 22px; }
 .sel-foot { margin-top: 34px; font-size: 24px; line-height: 1.6; color: var(--paper-d); }
+
+/* ===== v1.2 繪卷美術：匾額、符紙、銅牌、香爐（GPT 手繪素材） ===== */
+.ib { background: url(art/ui-button.webp) center / 100% 100% no-repeat; border: 0; box-shadow: none; filter: drop-shadow(0 5px 4px rgba(0, 0, 0, .55)); }
+.ib:active { transform: translateY(3px) scale(.96); box-shadow: none; }
+.ib svg { stroke: #f4e3b5; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .6)); }
+#bMute svg path:first-child { fill: #f4e3b5; }
+.lv { flex: 1; border: 22px solid transparent; border-image: url(art/ui-plaque.webp) 56 fill / 22px stretch; padding: 0 4px; margin: 0 2px;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .5)); }
+.lv b { color: #f4e3b5; font-size: 36px; text-shadow: 0 2px 0 #2a0a08; }
+.lv span { color: #e3b964; font-size: 21px; }
+.inkwrap i { background: rgba(18, 12, 16, .78); border: 2px solid #c9a35b; box-shadow: 0 3px 6px rgba(0, 0, 0, .5); }
+.spool { width: 62px; height: 48px; }
+img.spool { object-fit: contain; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .5)); }
+#timer { width: 100px; height: 111px; padding-top: 18px; background: url(art/ui-timer.webp) center / 100% 100% no-repeat; border: 0; outline: 0; box-shadow: none;
+  color: #f4e3b5; font-size: 42px; text-shadow: 0 2px 0 #000; filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .5)); }
+#timer.hurry { background: url(art/ui-timer.webp) center / 100% 100% no-repeat; color: #ff5a4a; }
+.hint { background: none; border: 14px solid transparent; border-image: url(art/ui-talisman.webp) 44 fill / 14px stretch; box-shadow: none; color: #7d0c1f;
+  height: 70px; padding: 0 6px 0 0; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .45)); }
+.hint.on { background: none; color: #fff; border-image: url(art/ui-plaque.webp) 56 fill / 14px stretch; }
+#tip { top: 400px; background: none; border: 22px solid transparent; border-image: url(art/ui-talisman.webp) 44 fill / 22px stretch; color: #2a1810; box-shadow: none;
+  padding: 4px 10px; filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .5)); }
+#result { background: none; border: 34px solid transparent; border-image: url(art/ui-talisman.webp) 44 fill / 34px stretch; box-shadow: none; padding: 6px 14px;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, .6)); }
+#result::before { display: none; }
+.btn { background: none; border: 20px solid transparent; border-image: url(art/ui-plaque.webp) 56 fill / 20px stretch; box-shadow: none; color: #f4e3b5;
+  height: 92px; padding: 0 10px; text-shadow: 0 2px 0 #2a0a08; filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .55)); }
+.btn:active { transform: translateY(3px) scale(.98); box-shadow: none; }
+.btn.big { height: 112px; }
+.btn.ghost, #result .row .btn.ghost { background: none; border-image: url(art/ui-talisman.webp) 44 fill / 20px stretch; color: #7d0c1f; text-shadow: none; box-shadow: none; }
+.tag { background: none; border: 14px solid transparent; border-image: url(art/ui-talisman.webp) 44 fill / 14px stretch; box-shadow: none; color: #7d0c1f; height: 70px; padding: 0 6px; }
+.cell { background: none; border: 20px solid transparent; border-image: url(art/ui-talisman.webp) 44 fill / 20px stretch; box-shadow: none; padding: 0 6px;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, .5)); }
+.cell.lock { background: none; filter: grayscale(1) brightness(.55); }
+#title { background: linear-gradient(rgba(10, 8, 16, .35), rgba(10, 8, 16, 0) 35%, rgba(10, 8, 16, .75)), url(art/bg-street.webp) center bottom / cover; }
+#select { background: linear-gradient(rgba(10, 8, 16, .55), rgba(10, 8, 16, .7)), url(art/bg-castle.webp) center bottom / cover; }
+
+#title h1 { left: 0; right: 0; top: 150px; text-align: center; text-shadow: none; }
+#title .logo { width: 680px; filter: drop-shadow(0 0 14px rgba(244, 227, 181, .55)) drop-shadow(0 6px 10px rgba(0, 0, 0, .6)); }
+#title .stamp { top: 40px; left: 36px; transform: scale(.85); transform-origin: 0 0; }
+#title .sub { left: 0; right: 0; top: 500px; text-align: center; color: #f4e3b5; text-shadow: 0 2px 6px #000; }

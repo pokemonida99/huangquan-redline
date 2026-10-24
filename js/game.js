@@ -9,9 +9,11 @@
 
   // ---------- 圖片 ----------
   const IMG = {};
-  ['bg', 'bat', 'head-normal', 'head-scared', 'head-hurt', 'head-smug'].forEach((k) => {
-    IMG[k] = new Image(); IMG[k].src = `art/${k}.webp`; IMG[k].onload = () => { if (k === 'bg') layer = null; draw(); };
+  ['bg-street', 'bg-river', 'bg-castle', 'stone', 'lantern', 'bat', 'head-normal', 'head-scared', 'head-hurt', 'head-smug'].forEach((k) => {
+    IMG[k] = new Image(); IMG[k].src = `art/${k}.webp`; IMG[k].onload = () => { if (/^(bg|stone)/.test(k)) layer = null; draw(); };
   });
+  // 每五關換一個場景
+  const bgOf = (i) => (i < 5 ? 'bg-street' : i < 10 ? 'bg-river' : 'bg-castle');
 
   // 石材紋理
   const stone = (() => {
@@ -31,6 +33,14 @@
     }
     return ctx.createPattern(c, 'repeat');
   })();
+  let stoneArt = null;
+  function stoneFill() {
+    if (!stoneArt && IMG.stone.complete && IMG.stone.naturalWidth) {
+      stoneArt = ctx.createPattern(IMG.stone, 'repeat');
+      stoneArt.setTransform && stoneArt.setTransform(new DOMMatrix().scale(0.42));
+    }
+    return stoneArt || stone;
+  }
 
   // ---------- 存檔 ----------
   let save = { stars: {} };
@@ -269,20 +279,17 @@
     const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height;
     const g = c.getContext('2d');
     g.setTransform(scale * dpr, 0, 0, scale * dpr, 0, 0);
-    g.fillStyle = '#eee4cf'; g.fillRect(0, 0, W, SH);
-    if (IMG.bg.complete && IMG.bg.naturalWidth) {
-      g.save(); g.globalAlpha = 0.13; g.globalCompositeOperation = 'luminosity';
-      const bh = Math.max(SH, H); g.drawImage(IMG.bg, (W - bh * 0.5625) / 2, SH - bh, bh * 0.5625, bh);
-      g.restore();
+    g.fillStyle = '#1b1620'; g.fillRect(0, 0, W, SH);
+    const img = IMG[bgOf(li)];
+    if (img.complete && img.naturalWidth) { // 填滿、貼齊底部
+      const k = Math.max(W / img.naturalWidth, SH / img.naturalHeight), iw = img.naturalWidth * k, ih = img.naturalHeight * k;
+      g.drawImage(img, (W - iw) / 2, SH - ih, iw, ih);
     }
-    g.strokeStyle = 'rgba(120,70,50,.13)'; g.lineWidth = 1.5;
-    g.beginPath();
-    for (let x = 0; x <= W; x += 48) { g.moveTo(x, 0); g.lineTo(x, SH); }
-    for (let y = (OY % 48 + 48) % 48; y <= SH; y += 48) { g.moveTo(0, y); g.lineTo(W, y); }
-    g.stroke();
     g.translate(0, OY);
     const keep = ctx; ctxSwap(g);
-    for (const b of S.hazards) if (b.def.kind === 'water') { g.fillStyle = '#0d2a30'; g.fillRect(b.def.x - b.def.w / 2, b.def.y - b.def.h / 2, b.def.w, b.def.h); }
+    for (const b of S.hazards) if (b.def.kind === 'water') {
+      g.fillStyle = 'rgba(10,38,44,.82)'; g.fillRect(b.def.x - b.def.w / 2, b.def.y - b.def.h / 2, b.def.w, b.def.h);
+    }
     for (const b of S.solids) drawSolid(b);
     ctxSwap(keep);
     return c;
@@ -296,9 +303,11 @@
     ctx.closePath();
   }
   function drawSolid(b) {
+    // 地形落在場景裡的影子
+    ctx.save(); ctx.translate(6, 8); poly(b); ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fill(); ctx.restore();
     poly(b);
-    ctx.fillStyle = stone; ctx.fill();
-    ctx.strokeStyle = '#000'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = stoneFill(); ctx.fill();
+    ctx.strokeStyle = '#120d12'; ctx.lineWidth = 3; ctx.stroke();
     // 金色頂邊：找朝上的那條邊
     const v = b.vertices;
     let best = 0, by = 1e9;
@@ -308,8 +317,8 @@
       if (ny < by) { by = ny; best = i; }
     }
     const a = v[best], c = v[(best + 1) % v.length];
-    ctx.strokeStyle = '#c9a35b'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(a.x, a.y + 2); ctx.lineTo(c.x, c.y + 2); ctx.stroke();
+    ctx.strokeStyle = 'rgba(236,214,170,.55)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y + 3); ctx.lineTo(c.x, c.y + 3); ctx.stroke();
   }
   function drawHazard(b, t) {
     const d = b.def, x0 = d.x - d.w / 2, y0 = d.y - d.h / 2;
@@ -354,23 +363,20 @@
     const glow = ctx.createRadialGradient(0, 0, 10, 0, 0, 110);
     glow.addColorStop(0, 'rgba(255,90,40,.35)'); glow.addColorStop(1, 'rgba(255,90,40,0)');
     ctx.fillStyle = glow; ctx.fillRect(-110, -110, 220, 220);
-    // 燈籠身
-    ctx.fillStyle = '#b3261e';
-    ctx.beginPath(); ctx.ellipse(0, 0, 40, 46, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = 'rgba(60,8,8,.7)'; ctx.lineWidth = 2;
-    for (const k of [-24, -10, 10, 24]) { ctx.beginPath(); ctx.ellipse(0, 0, Math.abs(k), 46, 0, 0, Math.PI * 2); ctx.stroke(); }
-    ctx.fillStyle = '#16100c'; ctx.fillRect(-20, -52, 40, 10); ctx.fillRect(-16, 42, 32, 8);
-    // 破口
-    ctx.fillStyle = '#050304';
-    ctx.beginPath(); ctx.moveTo(-18, 30); ctx.lineTo(-8, 18); ctx.lineTo(2, 28); ctx.lineTo(12, 16); ctx.lineTo(20, 32); ctx.lineTo(8, 46); ctx.lineTo(-10, 46); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = 'rgba(255,60,60,.9)';
-    ctx.beginPath(); ctx.arc(-4, 34, 2.2, 0, 7); ctx.arc(5, 34, 2.2, 0, 7); ctx.fill();
+    const L = IMG.lantern;
+    if (L.complete && L.naturalWidth) { // 畫的破燈籠（洞口朝下）
+      const hh = 128, ww = hh * L.naturalWidth / L.naturalHeight;
+      ctx.drawImage(L, -ww / 2, -hh * 0.52, ww, hh);
+    } else {
+      ctx.fillStyle = '#b3261e'; ctx.beginPath(); ctx.ellipse(0, 0, 40, 46, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#050304'; ctx.beginPath(); ctx.ellipse(0, 30, 16, 12, 0, 0, 7); ctx.fill();
+    }
     ctx.restore();
   }
   function noDraw(m, t) {
     ctx.save();
     ctx.setLineDash([8, 8]); ctx.lineDashOffset = -t * 20;
-    ctx.strokeStyle = 'rgba(125,12,31,.35)'; ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(244,227,181,.5)'; ctx.lineWidth = 2.5;
     ctx.beginPath(); ctx.arc(m.x, m.y, 52, 0, 7); ctx.stroke();
     ctx.restore();
   }
